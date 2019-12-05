@@ -36,7 +36,7 @@ async function snippet(ctx) {
   ffmpeg('./after-short.mp3')
     .setStartTime(begin)
     .setDuration(duration)
-    .output('af3.mp3')
+    .output('output.mp3')
     .on('end', async function (err) {
       if (!err) {
         console.log('conversion Done');
@@ -50,7 +50,7 @@ async function snippet(ctx) {
 async function getNote(ctx) {
   console.log("GET NOTE!!")
   // The name of the audio file to transcribe
-  const fileName = './af3.mp3';
+  const fileName = './output.mp3';
 
   // Reads a local audio file and converts it to base64
   const file = fs.readFileSync(fileName);
