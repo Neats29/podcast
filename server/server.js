@@ -32,31 +32,31 @@ async function episodes(ctx) {
   ).then(r => r.json());
 
   if (!podcast || !podcast.results || podcast.results.length !== 1) {
-    console.log("Podcast not found");
-    ctx.status = 404;
-    ctx.body = {
-      error: "Not found"
-    };
+    throw new Error("Not found");
   }
 
   console.log("Downloading feed", podcast.results[0].feedUrl);
   const xml = await fetch(podcast.results[0].feedUrl).then(r => r.text());
 
   console.log("Parsing XML", xml.substring(0, 30));
-  parsePodcast(xml, (err, data) => {
-    if (err) {
-      console.error("Error parsing podcast feed url", err);
-      ctx.status = 400;
-      ctx.body = {
-        error: err.message
-      };
-      return;
-    }
+  const data = await new Promise((resolve, reject) => {
+    parsePodcast(xml, (err, data) => {
+      if (err) {
+        reject(err);
+        return;
+      }
 
-    console.log(data);
-
-    ctx.body = data;
+      resolve(data);
+    });
   });
+
+  if (!ctx.request.query.guid) {
+    ctx.body = data;
+    return;
+  }
+
+  const guid = Buffer.from(ctx.request.query.guid, "base64").toString();
+  ctx.body = data.episodes.find(x => x.guid === guid);
 }
 
 async function snippet(ctx) {
