@@ -2,6 +2,7 @@
 const speech = require("@google-cloud/speech");
 const fs = require("fs");
 var ffmpeg = require("fluent-ffmpeg");
+const { Writable } = require("stream");
 
 const Koa = require("koa");
 const router = require("koa-router")();
@@ -9,6 +10,7 @@ const koaBody = require("koa-body");
 const cors = require("@koa/cors");
 const fetch = require("node-fetch");
 const parsePodcast = require("node-podcast-parser");
+const { createSnippet } = require('./audio');
 
 const app = new Koa();
 
@@ -21,7 +23,8 @@ app.use(cors());
 router
   .get("/episodes", episodes)
   .post("/snippet", snippet)
-  .get("/getNote", getNote);
+  .get("/getNote", getNote)
+  .post("/createSnippet", createSnippetHandler);
 
 app.use(router.routes());
 
@@ -61,25 +64,27 @@ async function episodes(ctx) {
 
 async function snippet(ctx) {
   const data = ctx.request.body;
-  const start = Math.floor(JSON.parse(data).startTime / 1000);
-  const duration = 10;
+  console.log("DATA", data)
+  const pausedAt = Math.floor(JSON.parse(data).startTime / 1000);
+  let duration = 10;
   // if the selection is earlier than 10 secs into the audio, then do from the begining
   let begin = 0;
-  const x = start - duration;
+  const x = pausedAt - duration;
   if (x > 0) {
     begin = x;
+    duration = pausedAt
   }
 
   ffmpeg("./after-short.mp3")
     .setStartTime(begin)
     .setDuration(duration)
     .output("output.mp3")
-    .on("end", async function(err) {
+    .on("end", async function (err) {
       if (!err) {
         console.log("conversion Done");
       }
     })
-    .on("error", function(err) {
+    .on("error", function (err) {
       console.log("error: ", +err);
     })
     .run();
@@ -99,7 +104,7 @@ async function getNote(ctx) {
     content: audioBytes
   };
   const config = {
-    encoding: "MPEG-1",
+    // encoding: "MPEG-1",
     sampleRateHertz: 16000,
     languageCode: "en-US"
   };
@@ -116,6 +121,22 @@ async function getNote(ctx) {
   // console.log(`Transcription: ${transcription}`);
 
   ctx.body = { text: transcription };
+}
+
+
+
+/// -----------------
+
+async function createSnippetHandler(ctx) {
+  console.log(ctx.request.body);
+
+  const result = await createSnippet({
+    url: ctx.request.body.url,
+    startTime: ctx.request.body.startTime,
+    endTime: ctx.request.body.endTime,
+  })
+
+  ctx.body = result;
 }
 
 app.listen(process.env.PORT);

@@ -4,7 +4,7 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "server": "PORT=3001 node server/server.js",
+    "server": "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/auth.json PORT=3001 nodemon server/server.js",
     "client": "cd client && npm run start"
   },
   "author": "",
@@ -17,6 +17,8 @@
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-router": "^7.4.0",
-    "node-podcast-parser": "^2.3.0"
+    "node-podcast-parser": "^2.3.0",
+    "nodemon": "^2.0.2",
+    "tempfile": "^3.0.0"
   }
 }

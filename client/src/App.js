@@ -122,6 +122,10 @@ const Episode = props => {
 
   console.log(data)
 
+  const audioRef = useRef(null)
+
+
+
   if (!data) {
     return <div>Loading...</div>;
   }
@@ -135,9 +139,36 @@ const Episode = props => {
         width={100}
         height={100}
       />
-      <audio controls src={data.enclosure.url}>
+      <audio controls src={data.enclosure.url} ref={audioRef}>
       </audio>
-      <SnippetLogo width="50px" height="50px"></SnippetLogo>
+      <SnippetLogo width="50px" height="50px"
+        onClick={() => {
+          const endTime = audioRef.current.currentTime;
+          let startTime = endTime - 20;
+
+          if (startTime < 0) {
+            startTime = 0;
+          }
+
+          fetch(`http://localhost:3001/createSnippet`, {
+            body: JSON.stringify({
+              url: data.enclosure.url,
+              endTime,
+              startTime,
+            }),
+            headers: {
+              'content-type': "application/json"
+            },
+            method: "POST"
+          }
+          )
+            .then(data => data.json())
+            .then(data => {
+              console.log(data)
+            })
+        }}
+
+      ></SnippetLogo>
     </>
   )
 }
