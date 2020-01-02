@@ -8,6 +8,7 @@ function App() {
       <Router>
         <Search path="/" />
         <Episodes path="episodes/:id" />
+        <Episode path="episodes/:id/:guid" />
       </Router>
     </div>
   );
@@ -80,6 +81,8 @@ const Episodes = props => {
       });
   }, [props.id]);
 
+  console.log(data)
+
   if (!data) {
     return <div>Loading...</div>;
   }
@@ -93,7 +96,9 @@ const Episodes = props => {
         {data.episodes.map((e, i) => {
           return (
             <li>
-              <span>{e.title}</span>
+              <Link to={`/episodes/${props.id}/${btoa(e.guid)}`} >
+                <span>{e.title}</span>
+              </Link>
               <span>{e.published}</span>
             </li>
           );
@@ -102,5 +107,34 @@ const Episodes = props => {
     </header>
   );
 };
+
+const Episode = props => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch(`http://localhost:3001/episodes?guid=${atob(props.guid)}`)
+      .then(r => r.json())
+      .then(r => {
+        setData(r);
+      });
+  }, [props.guid]);
+
+
+  console.log(props)
+  return (
+    <>
+      <h2>{data.title}</h2>
+      <img
+        src={data.image}
+        className=""
+        width={100}
+        height={100}
+      />
+      <audio controls src="./after-short.mp3">
+      </audio>
+      <img style="margin-left: 30px;" src="./q.svg" onClick="getNote()" width="50px" height="50px"></img>
+    </>
+  )
+}
 
 export default App;
