@@ -120,11 +120,13 @@ const Episode = props => {
       });
   }, [props.guid]);
 
+  const [snippetLoaderVisible, showSnippetLoader] = useState(false)
+
+  const [snippetText, getSnippetText] = useState("")
+
   console.log(data)
 
   const audioRef = useRef(null)
-
-
 
   if (!data) {
     return <div>Loading...</div>;
@@ -150,6 +152,8 @@ const Episode = props => {
             startTime = 0;
           }
 
+          showSnippetLoader(true)
+
           fetch(`http://localhost:3001/createSnippet`, {
             body: JSON.stringify({
               url: data.enclosure.url,
@@ -165,10 +169,23 @@ const Episode = props => {
             .then(data => data.json())
             .then(data => {
               console.log(data)
+              if (data) {
+                showSnippetLoader(false)
+                getSnippetText(data.text)
+              }
             })
         }}
 
       ></SnippetLogo>
+      {snippetLoaderVisible &&
+        <div className="snippet-loader"></div>
+      }
+
+      {snippetText.length > 0 &&
+        <div>
+          <p>{snippetText}</p>
+        </div>
+      }
     </>
   )
 }
