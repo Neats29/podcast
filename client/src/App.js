@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { Router, Link } from "@reach/router";
-import { SnippetLogo } from "./snippet"
-import Slider from 'react-input-slider';
+import { SnippetLogo } from "./snippet";
+import Slider from "react-input-slider";
 
 function App() {
   return (
@@ -97,23 +97,44 @@ const Episodes = props => {
   }
 
   return (
-    <header className="App-header">
-      <div>{data.title}</div>
-      <div>{data.author}</div>
-      {data.description && <div>{data.description.long}</div>}
-      <ul>
+    <div className="episodes-page">
+      <div className="podcast-header">
+        <div className="podcast-header-content">
+          <div className="podcast-header-title">{data.title}</div>
+          <div className="podcast-header-author">by {data.author}</div>
+          {data.description && (
+            <div className="podcast-header-description">
+              {data.description.long}
+            </div>
+          )}
+        </div>
+      </div>
+      <ul className="podcast-episodes">
         {data.episodes.map((e, i) => {
           return (
-            <li>
-              <Link to={`/episodes/${props.id}/${btoa(e.guid)}`}>
-                <span>{e.title}</span>
+            <li key={i}>
+              <Link
+                to={`/episodes/${props.id}/${btoa(e.guid)}`}
+                className="podcast-episode-item"
+              >
+                <img
+                  className="podcast-episode-item-img"
+                  src={e.image || data.image}
+                  width={50}
+                  height={50}
+                />
+                <span className="podcast-episode-item-details">
+                  <span className="podcast-episode-item-title">{e.title}</span>
+                  <span className="podcast-episode-item-published">
+                    Published {e.published}
+                  </span>
+                </span>
               </Link>
-              <span>{e.published}</span>
             </li>
           );
         })}
       </ul>
-    </header>
+    </div>
   );
 };
 
@@ -128,7 +149,7 @@ const Episode = props => {
       });
   }, [props.guid]);
 
-  const [snippetLoaderVisible, showSnippetLoader] = useState(false)
+  const [snippetLoaderVisible, showSnippetLoader] = useState(false);
 
   const [snippetData, setSnippetData] = useState([{
     text: "",
@@ -146,14 +167,8 @@ const Episode = props => {
   return (
     <>
       <h2>{data.title}</h2>
-      <img
-        src={data.image}
-        className=""
-        width={100}
-        height={100}
-      />
-      <audio controls src={data.enclosure.url} ref={audioRef}>
-      </audio>
+      <img src={data.image} className="" width={100} height={100} />
+      <audio controls src={data.enclosure.url} ref={audioRef}></audio>
       <form>
         <div>{`Playback Speed ${playbackSpeed.x}`}</div>
         <Slider
@@ -163,13 +178,17 @@ const Episode = props => {
           xmax={3.5}
           xmin={0.5}
           onChange={({ x }) => {
-            setPlaybackSpeed(playbackSpeed => ({ ...playbackSpeed, x: parseFloat(x.toFixed(2)) }))
-            audioRef.current.playbackRate = x
-          }
-          }
+            setPlaybackSpeed(playbackSpeed => ({
+              ...playbackSpeed,
+              x: parseFloat(x.toFixed(2))
+            }));
+            audioRef.current.playbackRate = x;
+          }}
         ></Slider>
       </form>
-      <SnippetLogo width="50px" height="50px"
+      <SnippetLogo
+        width="50px"
+        height="50px"
         onClick={() => {
           const endTime = audioRef.current.currentTime;
           console.log("endTime", endTime)
