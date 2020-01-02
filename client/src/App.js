@@ -272,7 +272,9 @@ const Episode = props => {
             />
             {snippetData.length === 0 ? (
               <div>Click the quote logo to create a new snippet</div>
-            ) : null}
+            ) : (
+              <span>Click on the snippets to edit them</span>
+            )}
           </div>
 
           <ul className="episode-snippets">
@@ -280,7 +282,20 @@ const Episode = props => {
               return (
                 <div key={i} className="episode-snippet">
                   {s.loading && <div className="snippet-loader"></div>}
-                  {s.text && <p className="episode-snippet-quote">{s.text}</p>}
+                  {s.text && (
+                    <div
+                      contenteditable="true"
+                      className="episode-snippet-quote"
+                      onChange={e => {
+                        console.log(e);
+                        const snippetDataCopy = [...snippetData];
+                        snippetDataCopy[i].text = e.target.value;
+                        setSnippetData(snippetDataCopy);
+                      }}
+                    >
+                      {s.text}
+                    </div>
+                  )}
                   <p className="episode-snippet-timestamp">{`At: ${s.timestamp} `}</p>
                 </div>
               );
