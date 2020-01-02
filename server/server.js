@@ -7,6 +7,9 @@ const Koa = require("koa");
 const router = require("koa-router")();
 const koaBody = require("koa-body");
 const cors = require("@koa/cors");
+const fetch = require("node-fetch");
+const parsePodcast = require("node-podcast-parser");
+
 const app = new Koa();
 
 // Creates a client
@@ -16,21 +19,46 @@ app.use(koaBody());
 app.use(cors());
 
 router
-  .get("/search", search)
+  .get("/episodes", episodes)
   .post("/snippet", snippet)
   .get("/getNote", getNote);
 
 app.use(router.routes());
 
-async function search(ctx) {
-  ctx.body = {
-    results: [
-      {
-        title: "foo"
-      }
-    ]
-  };
+async function episodes(ctx) {
+  console.log("Looking up podcast in iTunes API", ctx.request.query.id);
+  const podcast = await fetch(
+    `https://itunes.apple.com/lookup?id=${ctx.request.query.id}`
+  ).then(r => r.json());
+
+  if (!podcast || !podcast.results || podcast.results.length !== 1) {
+    console.log("Podcast not found");
+    ctx.status = 404;
+    ctx.body = {
+      error: "Not found"
+    };
+  }
+
+  console.log("Downloading feed", podcast.results[0].feedUrl);
+  const xml = await fetch(podcast.results[0].feedUrl).then(r => r.text());
+
+  console.log("Parsing XML", xml.substring(0, 30));
+  parsePodcast(xml, (err, data) => {
+    if (err) {
+      console.error("Error parsing podcast feed url", err);
+      ctx.status = 400;
+      ctx.body = {
+        error: err.message
+      };
+      return;
+    }
+
+    console.log(data);
+
+    ctx.body = data;
+  });
 }
+
 async function snippet(ctx) {
   const data = ctx.request.body;
   const start = Math.floor(JSON.parse(data).startTime / 1000);

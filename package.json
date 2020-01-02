@@ -16,6 +16,7 @@
     "googleapis": "^45.0.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
-    "koa-router": "^7.4.0"
+    "koa-router": "^7.4.0",
+    "node-podcast-parser": "^2.3.0"
   }
 }
