@@ -87,7 +87,7 @@ export const Episode = props => {
               onClick={() => {
                 const endTime = audioRef.current.currentTime;
                 console.log("endTime", endTime);
-                let startTime = endTime - 20;
+                let startTime = endTime - 15;
 
                 if (startTime < 0) {
                   startTime = 0;
