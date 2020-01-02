@@ -4,7 +4,8 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "server": "node script.js"
+    "server": "PORT=3001 node server/server.js",
+    "client": "cd client && npm run start"
   },
   "author": "",
   "license": "ISC",
