@@ -93,7 +93,12 @@ const Episodes = props => {
   }, [props.id]);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div className="snippet-loader-page">
+        <div className="snippet-loader"></div>
+      </div>
+    )
+
   }
 
   return (
@@ -161,7 +166,11 @@ const Episode = props => {
   const audioRef = useRef(null);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div className="snippet-loader-page">
+        <div className="snippet-loader"></div>
+      </div>
+    )
   }
 
   return (

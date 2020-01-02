@@ -42,6 +42,11 @@ $color4: rgba(216, 131, 115, 1);  // new york pink
 $color5: rgba(189, 30, 30, 1);    // cornell red 
 */
 
+
+body, .app {
+  height: 100%
+}
+
 .search-input-wrapper {
   background-color: rgba(23, 37, 90, 1);
   padding: 50px 0;
@@ -162,4 +167,34 @@ $color5: rgba(189, 30, 30, 1);    // cornell red
 .podcast-episode-item-published {
   color: #000;
   font-size: 12px;
+}
+
+
+
+.snippet-loader {
+  border: 16px solid #f3f3f3;
+  /* Light grey */
+  border-top: 16px solid #3498db;
+  /* Blue */
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  animation: spin 2s linear infinite;
+}
+
+.snippet-loader-page {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  height: 100%
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
