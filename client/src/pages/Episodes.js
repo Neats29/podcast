@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link } from "@reach/router";
+import { useSelector, useDispatch } from "react-redux";
+import { getPodcast } from "../store";
 
 export const Episodes = props => {
-  const [data, setData] = useState(null);
+  const dispatch = useDispatch();
+  const data = useSelector(state => state.podcasts.byId[props.id]);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/episodes?id=${props.id}`)
-      .then(r => r.json())
-      .then(r => {
-        setData(r);
-      });
+    if (!data) {
+      getPodcast(dispatch, props.id);
+    }
   }, [props.id]);
 
   if (!data) {

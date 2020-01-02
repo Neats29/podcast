@@ -1,17 +1,33 @@
 import { createStore, applyMiddleware } from "redux";
 
-let initialState = {
-  search: {
-    term: "",
-    results: []
-  }
-};
+function getInitialState() {
+  let initialState = {
+    version: 3,
+    search: {
+      term: "",
+      results: []
+    },
+    podcasts: {
+      byId: {}
+    }
+  };
 
-function init() {
   const cached = localStorage.getItem("store");
-  if (cached) {
-    initialState = JSON.parse(cached);
+  if (!cached) {
+    console.log("No cached state");
+    return initialState;
   }
+
+  const parsedCached = JSON.parse(cached);
+  if (parsedCached.version !== initialState.version) {
+    console.log(
+      `Not loading cached state due to version mismatch. Wanted ${initialState.version} but ${parsedCached.version} was retrieved from cache.`
+    );
+    return initialState;
+  }
+
+  console.log("Loaded cached state");
+  return parsedCached;
 }
 
 const persist = store => next => action => {
@@ -38,7 +54,18 @@ export async function search(dispatch, term) {
     });
 }
 
-function reducer(state = initialState, action) {
+export async function getPodcast(dispatch, id) {
+  return fetch(`http://localhost:3001/episodes?id=${id}`)
+    .then(r => r.json())
+    .then(r => {
+      dispatch({
+        type: "FETCH_PODCAST/SUCCESS",
+        data: r
+      });
+    });
+}
+
+function reducer(state = getInitialState(), action) {
   switch (action.type) {
     case "SEARCH/LOADING":
       return {
@@ -58,11 +85,21 @@ function reducer(state = initialState, action) {
           results: action.data
         }
       };
+    case "FETCH_PODCAST/SUCCESS":
+      return {
+        ...state,
+        podcasts: {
+          ...state.podcasts,
+          byId: {
+            ...state.podcasts.byId,
+            [action.data.id]: action.data
+          }
+        }
+      };
     default:
+      console.warn("unhandled redux action", action);
       return state;
   }
 }
-
-init();
 
 export const store = createStore(reducer, applyMiddleware(persist));

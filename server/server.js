@@ -42,6 +42,8 @@ async function episodes(ctx) {
     });
   });
 
+  data.id = ctx.request.query.id;
+
   if (!ctx.request.query.guid) {
     ctx.body = data;
     return;
@@ -58,7 +60,7 @@ async function createSnippet(ctx) {
   const { url, startTime, endTime } = ctx.request.body;
   console.log("url", url);
   console.log("startTime", startTime);
-  console.log("endTIme", endTIme);
+  console.log("endTIme", endTime);
 
   const result = await audio.createSnippet({
     url,

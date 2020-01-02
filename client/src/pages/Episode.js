@@ -1,17 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
-import { SnippetLogo } from "../snippet";
+import { useSelector, useDispatch } from "react-redux";
 import Slider from "react-input-slider";
+import { getPodcast } from "../store";
+import { SnippetLogo } from "../snippet";
 
 export const Episode = props => {
-  const [data, setData] = useState(null);
+  const dispatch = useDispatch();
+  const data = useSelector(state => state.podcasts.byId[props.id]);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/episodes?id=${props.id}&guid=${props.guid}`)
-      .then(r => r.json())
-      .then(r => {
-        setData(r);
-      });
-  }, [props.guid]);
+    if (!data) {
+      getPodcast(dispatch, props.id);
+    }
+  }, [props.id]);
+
+  // useEffect(() => {
+  //   fetch(`http://localhost:3001/episodes?id=${props.id}&guid=${props.guid}`)
+  //     .then(r => r.json())
+  //     .then(r => {
+  //       setData(r);
+  //     });
+  // }, [props.id, props.guid]);
 
   const [snippetData, setSnippetData] = useState([]);
   const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
@@ -24,6 +33,8 @@ export const Episode = props => {
       </div>
     );
   }
+
+  const episode = data.episodes.find(x => x.guid === atob(props.guid));
 
   return (
     <div>
@@ -41,17 +52,17 @@ export const Episode = props => {
       <div className="episode-content">
         <div className="episode-player">
           <img
-            src={data.episode.image}
+            src={episode.image}
             className="episode-player-img"
             width={300}
             height={300}
           />
           <div className="episode-player-content">
-            <h2>{data.episode.title}</h2>
+            <h2>{episode.title}</h2>
             <div className="episode-player-controls">
               <audio
                 controls
-                src={data.episode.enclosure.url}
+                src={episode.enclosure.url}
                 ref={audioRef}
               ></audio>
               <form>
@@ -107,7 +118,7 @@ export const Episode = props => {
 
                 fetch(`http://localhost:3001/createSnippet`, {
                   body: JSON.stringify({
-                    url: data.episode.enclosure.url,
+                    url: episode.enclosure.url,
                     endTime,
                     startTime
                   }),
