@@ -42,9 +42,13 @@ $color4: rgba(216, 131, 115, 1);  // new york pink
 $color5: rgba(189, 30, 30, 1);    // cornell red 
 */
 
+body,
+.app {
+  height: 100%;
+}
 
-body, .app {
-  height: 100%
+.app {
+  padding-bottom: 100px;
 }
 
 .search-input-wrapper {
@@ -169,8 +173,6 @@ body, .app {
   font-size: 12px;
 }
 
-
-
 .snippet-loader {
   border: 16px solid #f3f3f3;
   /* Light grey */
@@ -186,7 +188,7 @@ body, .app {
   display: flex;
   align-content: center;
   justify-content: center;
-  height: 100%
+  height: 100%;
 }
 
 @keyframes spin {
@@ -197,4 +199,87 @@ body, .app {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.episode-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.episode-player {
+  display: flex;
+  margin-bottom: 30px;
+}
+
+.episode-player-img {
+  margin-right: 20px;
+}
+
+.episode-player-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.episode-player-controls {
+  background-color: rgba(23, 37, 90, 0.1);
+  padding: 10px;
+  border-top: 3px solid rgba(245, 226, 200, 1);
+}
+
+.episode-player-controls audio {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.episode-player-controls audio:focus {
+  outline: none;
+}
+
+.episode-player-controls form {
+  display: flex;
+  align-items: center;
+}
+
+.playback-speed-label {
+  margin-right: 20px;
+}
+
+.episode-snippets-container {
+  position: relative;
+}
+
+.episode-snippets-container h3 {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.create-snippet-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+.episode-snippets-header {
+  min-height: 50px;
+  margin-bottom: 20px;
+}
+
+.episode-snippet {
+  background-color: rgba(23, 37, 90, 0.1);
+  padding: 20px;
+  border-top: 3px solid rgba(245, 226, 200, 1);
+  margin-bottom: 20px;
+}
+
+.episode-snippet-quote {
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.episode-snippet-timestamp {
+  text-align: right;
 }

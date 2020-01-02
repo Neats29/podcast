@@ -97,8 +97,7 @@ const Episodes = props => {
       <div className="snippet-loader-page">
         <div className="snippet-loader"></div>
       </div>
-    )
-
+    );
   }
 
   return (
@@ -154,15 +153,8 @@ const Episode = props => {
       });
   }, [props.guid]);
 
-  const [snippetLoaderVisible, showSnippetLoader] = useState(false);
-
-  const [snippetData, setSnippetData] = useState([{
-    text: "",
-    timestamp: ""
-  }])
-
+  const [snippetData, setSnippetData] = useState([]);
   const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
-
   const audioRef = useRef(null);
 
   if (!data) {
@@ -170,89 +162,133 @@ const Episode = props => {
       <div className="snippet-loader-page">
         <div className="snippet-loader"></div>
       </div>
-    )
+    );
   }
 
   return (
-    <>
-      <h2>{data.title}</h2>
-      <img src={data.image} className="" width={100} height={100} />
-      <audio controls src={data.enclosure.url} ref={audioRef}></audio>
-      <form>
-        <div>{`Playback Speed ${playbackSpeed.x}`}</div>
-        <Slider
-          axis="x"
-          x={playbackSpeed.x}
-          xstep={0.1}
-          xmax={3.5}
-          xmin={0.5}
-          onChange={({ x }) => {
-            setPlaybackSpeed(playbackSpeed => ({
-              ...playbackSpeed,
-              x: parseFloat(x.toFixed(2))
-            }));
-            audioRef.current.playbackRate = x;
-          }}
-        ></Slider>
-      </form>
-      <SnippetLogo
-        width="50px"
-        height="50px"
-        onClick={() => {
-          const endTime = audioRef.current.currentTime;
-          console.log("endTime", endTime)
-          let startTime = endTime - 20;
-
-          if (startTime < 0) {
-            startTime = 0;
-          }
-
-
-          console.log("startTime", startTime)
-          showSnippetLoader(true);
-
-          fetch(`http://localhost:3001/createSnippet`, {
-            body: JSON.stringify({
-              url: data.enclosure.url,
-              endTime,
-              startTime
-            }),
-            headers: {
-              "content-type": "application/json"
-            },
-            method: "POST"
-          })
-            .then(data => data.json())
-            .then(data => {
-              if (data) {
-                const mins = Math.floor(startTime % 60)
-                const snippetTimeRange = `${Math.floor(startTime / 60)}:${mins === 0 ? "00" : mins}`
-                showSnippetLoader(false)
-                setSnippetData(snippetData.concat([{ text: data.text, timestamp: snippetTimeRange }]))
-              }
-            });
-        }}
-      ></SnippetLogo>
-      {snippetLoaderVisible && <div className="snippet-loader"></div>}
-
-      {
-        snippetData.length > 0 && (
-          <div>
-            {snippetData.map((s, i) => {
-              if (s.text.length > 0) {
-                return (
-                  <div>
-                    <p key={i}>{s.text}</p>
-                    <p key={`start-time - ${i} `}>{`Timestamp: ${s.timestamp} `}</p>
-                    <br />
-                  </div>
-                )
-              }
-            })}
+    <div>
+      <div className="podcast-header">
+        <div className="podcast-header-content">
+          <div className="podcast-header-title">{data.title}</div>
+          <div className="podcast-header-author">by {data.author}</div>
+          {data.description && (
+            <div className="podcast-header-description">
+              {data.description.long}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="episode-content">
+        <div className="episode-player">
+          <img
+            src={data.episode.image}
+            className="episode-player-img"
+            width={300}
+            height={300}
+          />
+          <div className="episode-player-content">
+            <h2>{data.episode.title}</h2>
+            <div className="episode-player-controls">
+              <audio
+                controls
+                src={data.episode.enclosure.url}
+                ref={audioRef}
+              ></audio>
+              <form>
+                <div className="playback-speed-label">{`Speed ${playbackSpeed.x}x`}</div>
+                <Slider
+                  axis="x"
+                  x={playbackSpeed.x}
+                  xstep={0.1}
+                  xmax={3.5}
+                  xmin={0.5}
+                  onChange={({ x }) => {
+                    setPlaybackSpeed(playbackSpeed => ({
+                      ...playbackSpeed,
+                      x: parseFloat(x.toFixed(2))
+                    }));
+                    audioRef.current.playbackRate = x;
+                  }}
+                ></Slider>
+              </form>
+            </div>
           </div>
-        )
-      }
-    </>
+        </div>
+        <div className="episode-snippets-container">
+          <div className="episode-snippets-header">
+            <h3>Snippets</h3>
+            <SnippetLogo
+              className="create-snippet-button"
+              width="50px"
+              height="50px"
+              onClick={() => {
+                const endTime = audioRef.current.currentTime;
+                console.log("endTime", endTime);
+                let startTime = endTime - 20;
+
+                if (startTime < 0) {
+                  startTime = 0;
+                }
+
+                console.log("startTime", startTime);
+                const mins = Math.floor(startTime % 60);
+                const snippetTimeRange = `${Math.floor(startTime / 60)}:${
+                  mins < 10 ? "0" + mins : mins
+                }`;
+
+                setSnippetData(
+                  snippetData.concat([
+                    { loading: true, timestamp: snippetTimeRange }
+                  ])
+                );
+
+                fetch(`http://localhost:3001/createSnippet`, {
+                  body: JSON.stringify({
+                    url: data.episode.enclosure.url,
+                    endTime,
+                    startTime
+                  }),
+                  headers: {
+                    "content-type": "application/json"
+                  },
+                  method: "POST"
+                })
+                  .then(data => data.json())
+                  .then(snippetResponse => {
+                    if (snippetResponse) {
+                      setSnippetData(
+                        snippetData
+                          .filter(x => !x.loading)
+                          .concat([
+                            {
+                              text: snippetResponse.text,
+                              timestamp: snippetTimeRange
+                            }
+                          ])
+                      );
+                    }
+                  });
+              }}
+            />
+            {snippetData.length === 0 ? (
+              <div>Click the quote logo to create a new snippet</div>
+            ) : null}
+          </div>
+
+          <ul className="episode-snippets">
+            {snippetData.map((s, i) => {
+              return (
+                <div key={i} className="episode-snippet">
+                  {s.loading && <div className="snippet-loader"></div>}
+                  {s.text && <p className="episode-snippet-quote">{s.text}</p>}
+                  <p className="episode-snippet-timestamp">{`At: ${s.timestamp} `}</p>
+                </div>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 };
 

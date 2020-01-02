@@ -59,7 +59,10 @@ async function episodes(ctx) {
   }
 
   const guid = Buffer.from(ctx.request.query.guid, "base64").toString();
-  ctx.body = data.episodes.find(x => x.guid === guid);
+  ctx.body = {
+    ...data,
+    episode: data.episodes.find(x => x.guid === guid),
+  };
 }
 
 async function snippet(ctx) {
