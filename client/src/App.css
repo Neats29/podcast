@@ -99,3 +99,67 @@ $color5: rgba(189, 30, 30, 1);    // cornell red
 .search-result-item-artist {
   font-size: 12px;
 }
+
+.podcast-header {
+  background-color: rgba(23, 37, 90, 1);
+  margin-bottom: 30px;
+}
+
+.podcast-header-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 0;
+  color: rgba(245, 226, 200, 1);
+}
+
+.podcast-header-title {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.podcast-header-author {
+  margin-bottom: 20px;
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.podcast-header-description {
+  color: white;
+}
+
+.podcast-episodes {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.podcast-episode-item {
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid rgba(23, 37, 90, 0.2);
+}
+
+.podcast-episode-item:hover {
+  background-color: rgba(245, 226, 200, 0.3);
+}
+
+.podcast-episode-item-img {
+  margin-right: 20px;
+}
+
+.podcast-episode-item-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.podcast-episode-item-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.podcast-episode-item-published {
+  color: #000;
+  font-size: 12px;
+}
