@@ -122,7 +122,7 @@ const Episode = props => {
 
   const [snippetLoaderVisible, showSnippetLoader] = useState(false)
 
-  const [snippetText, setSnippetText] = useState("")
+  const [snippetText, setSnippetText] = useState([])
 
 
   const audioRef = useRef(null)
@@ -169,7 +169,7 @@ const Episode = props => {
             .then(data => {
               if (data) {
                 showSnippetLoader(false)
-                setSnippetText(data.text)
+                setSnippetText(snippetText.concat([data.text]))
               }
             })
         }}
@@ -181,7 +181,15 @@ const Episode = props => {
 
       {snippetText.length > 0 &&
         <div>
-          <p>{snippetText}</p>
+          {snippetText.map((s, i) => {
+            return (
+              <div>
+                <p key={i}>{s}</p>
+                <br />
+              </div>
+            )
+
+          })}
         </div>
       }
     </>
