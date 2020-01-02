@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { Router, Link } from "@reach/router";
-import { SnippetLogo } from "./snippet";
+import { SnippetLogo } from "./snippet"
+import Slider from 'react-input-slider';
 
 function App() {
   return (
@@ -148,9 +149,11 @@ const Episode = props => {
       });
   }, [props.guid]);
 
-  const [snippetLoaderVisible, showSnippetLoader] = useState(false);
+  const [snippetLoaderVisible, showSnippetLoader] = useState(false)
 
-  const [snippetText, setSnippetText] = useState("");
+  const [snippetText, setSnippetText] = useState([])
+
+  const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
 
   const audioRef = useRef(null);
 
@@ -161,11 +164,30 @@ const Episode = props => {
   return (
     <>
       <h2>{data.title}</h2>
-      <img src={data.image} className="" width={100} height={100} />
-      <audio controls src={data.enclosure.url} ref={audioRef}></audio>
-      <SnippetLogo
-        width="50px"
-        height="50px"
+      <img
+        src={data.image}
+        className=""
+        width={100}
+        height={100}
+      />
+      <audio controls src={data.enclosure.url} ref={audioRef}>
+      </audio>
+      <form>
+        <div>{`Playback Speed ${playbackSpeed.x}`}</div>
+        <Slider
+          axis="x"
+          x={playbackSpeed.x}
+          xstep={0.1}
+          xmax={3.5}
+          xmin={0.5}
+          onChange={({ x }) => {
+            setPlaybackSpeed(playbackSpeed => ({ ...playbackSpeed, x: parseFloat(x.toFixed(2)) }))
+            audioRef.current.playbackRate = x
+          }
+          }
+        ></Slider>
+      </form>
+      <SnippetLogo width="50px" height="50px"
         onClick={() => {
           const endTime = audioRef.current.currentTime;
           let startTime = endTime - 20;
@@ -190,19 +212,29 @@ const Episode = props => {
             .then(data => data.json())
             .then(data => {
               if (data) {
-                showSnippetLoader(false);
-                setSnippetText(data.text);
+                showSnippetLoader(false)
+                setSnippetText(snippetText.concat([data.text]))
               }
             });
         }}
       ></SnippetLogo>
       {snippetLoaderVisible && <div className="snippet-loader"></div>}
 
-      {snippetText.length > 0 && (
-        <div>
-          <p>{snippetText}</p>
-        </div>
-      )}
+      {
+        snippetText.length > 0 && (
+          <div>
+            {snippetText.map((s, i) => {
+              return (
+                <div>
+                  <p key={i}>{s}</p>
+                  <br />
+                </div>
+              )
+
+            })}
+          </div>
+        )
+      }
     </>
   );
 };
