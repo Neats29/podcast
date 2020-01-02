@@ -4,20 +4,20 @@ const fs = require("fs");
 var ffmpeg = require("fluent-ffmpeg");
 const { Writable } = require("stream");
 const client = new speech.SpeechClient();
-const tempfile = require('tempfile');
+const tempfile = require("tempfile");
 
 async function createSnippet({ url, startTime, endTime }) {
-  console.log("creating snippet", url, startTime, endTime)
+  console.log("creating snippet", url, startTime, endTime);
   const audioBytes = await new Promise((resolve, reject) => {
-    const tmp = tempfile('.mp3');
+    const tmp = tempfile(".mp3");
     ffmpeg(url)
       .setStartTime(startTime)
       .setDuration(endTime - startTime)
       .output(tmp)
-      .on("end", function (err) {
+      .on("end", function(err) {
         if (err) {
-          reject(err)
-          return
+          reject(err);
+          return;
         }
 
         let buff;
@@ -33,8 +33,7 @@ async function createSnippet({ url, startTime, endTime }) {
       })
       .on("error", reject)
       .run();
-
-  })
+  });
 
   const audio = {
     content: audioBytes.toString("base64")
@@ -50,24 +49,26 @@ async function createSnippet({ url, startTime, endTime }) {
   };
 
   // Detects speech in the audio file
-  console.log("Extracting text")
+  console.log("Extracting text");
   const [response] = await client.recognize(request);
   const transcription = response.results
     .map(result => result.alternatives[0].transcript)
     .join("\n");
 
-  console.log("transcription", transcription)
+  console.log("transcription", transcription);
   return { text: transcription };
 }
 
 module.exports = {
-  createSnippet,
-}
+  createSnippet
+};
 
-
-if (require.main === module) [
-  createSnippet({
-    url: process.argv[2],
-    startTime: Number(process.argv[3]),
-  }).then(r => console.log(r)).catch(e => console.error(e))
-]
+if (require.main === module)
+  [
+    createSnippet({
+      url: process.argv[2],
+      startTime: Number(process.argv[3])
+    })
+      .then(r => console.log(r))
+      .catch(e => console.error(e))
+  ];

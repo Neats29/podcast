@@ -2,14 +2,15 @@ import { createStore, applyMiddleware } from "redux";
 
 function getInitialState() {
   let initialState = {
-    version: 3,
+    version: 5,
     search: {
       term: "",
       results: []
     },
     podcasts: {
       byId: {}
-    }
+    },
+    snippets: {}
   };
 
   const cached = localStorage.getItem("store");
@@ -65,6 +66,50 @@ export async function getPodcast(dispatch, id) {
     });
 }
 
+export async function createSnippet(
+  dispatch,
+  id,
+  guid,
+  url,
+  startTime,
+  endTime
+) {
+  dispatch({
+    type: "CREATE_SNIPPET/REQUEST",
+    data: {
+      id,
+      guid,
+      startTime,
+      endTime
+    }
+  });
+
+  return fetch(`http://localhost:3001/createSnippet`, {
+    body: JSON.stringify({
+      url: url,
+      endTime,
+      startTime
+    }),
+    headers: {
+      "content-type": "application/json"
+    },
+    method: "POST"
+  })
+    .then(data => data.json())
+    .then(data => {
+      dispatch({
+        type: "CREATE_SNIPPET/SUCCESS",
+        data: {
+          id,
+          guid,
+          startTime,
+          endTime,
+          text: data.text
+        }
+      });
+    });
+}
+
 function reducer(state = getInitialState(), action) {
   switch (action.type) {
     case "SEARCH/LOADING":
@@ -96,6 +141,58 @@ function reducer(state = getInitialState(), action) {
           }
         }
       };
+    case "CREATE_SNIPPET/REQUEST": {
+      const podcastSnippets = state.snippets[action.data.id];
+      const episodeSnippets = podcastSnippets
+        ? podcastSnippets[action.data.guid] || []
+        : [];
+      return {
+        ...state,
+        snippets: {
+          ...state.snippets,
+          [action.data.id]: {
+            ...podcastSnippets,
+            [action.data.guid]: [
+              ...episodeSnippets,
+              {
+                loading: true,
+                text: "",
+                startTime: action.data.startTime,
+                endTime: action.data.endTime
+              }
+            ]
+          }
+        }
+      };
+    }
+    case "CREATE_SNIPPET/SUCCESS": {
+      const podcastSnippets = state.snippets[action.data.id];
+      const episodeSnippets = podcastSnippets
+        ? podcastSnippets[action.data.guid]
+        : [];
+      return {
+        ...state,
+        snippets: {
+          ...state.snippets,
+          [action.data.id]: {
+            ...podcastSnippets,
+            [action.data.guid]: episodeSnippets.map(x => {
+              if (
+                x.startTime === action.data.startTime &&
+                x.endTime === action.data.endTime
+              ) {
+                return {
+                  ...x,
+                  loading: false,
+                  text: action.data.text
+                };
+              }
+              return x;
+            })
+          }
+        }
+      };
+    }
     default:
       console.warn("unhandled redux action", action);
       return state;

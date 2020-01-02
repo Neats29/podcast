@@ -1,14 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "@reach/router";
 import { useSelector, useDispatch } from "react-redux";
 import Slider from "react-input-slider";
-import { getPodcast } from "../store";
+import { getPodcast, createSnippet } from "../store";
 import { SnippetLogo } from "../snippet";
 
 export const Episode = props => {
   const dispatch = useDispatch();
   const data = useSelector(state => state.podcasts.byId[props.id]);
 
-  const [snippetData, setSnippetData] = useState([]);
+  const snippets = useSelector(state => {
+    if (!state.snippets[props.id]) {
+      return [];
+    }
+
+    if (!state.snippets[props.id][props.guid]) {
+      return [];
+    }
+
+    return state.snippets[props.id][props.guid];
+  });
   const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
   const audioRef = useRef(null);
 
@@ -32,7 +43,9 @@ export const Episode = props => {
     <div>
       <div className="podcast-header">
         <div className="podcast-header-content">
-          <div className="podcast-header-title">{data.title}</div>
+          <Link to={`/episodes/${props.id}`} className="podcast-header-title">
+            {data.title}
+          </Link>
           <div className="podcast-header-author">by {data.author}</div>
           {data.description && (
             <div className="podcast-header-description">
@@ -97,54 +110,36 @@ export const Episode = props => {
                 }
 
                 console.log("startTime", startTime);
-                const mins = Math.floor(startTime % 60);
-                const snippetTimeRange = `${Math.floor(startTime / 60)}:${
-                  mins < 10 ? "0" + mins : mins
-                }`;
 
-                setSnippetData(
-                  snippetData.concat([
-                    { loading: true, timestamp: snippetTimeRange }
-                  ])
+                createSnippet(
+                  dispatch,
+                  props.id,
+                  props.guid,
+                  episode.enclosure.url,
+                  startTime,
+                  endTime
                 );
-
-                fetch(`http://localhost:3001/createSnippet`, {
-                  body: JSON.stringify({
-                    url: episode.enclosure.url,
-                    endTime,
-                    startTime
-                  }),
-                  headers: {
-                    "content-type": "application/json"
-                  },
-                  method: "POST"
-                })
-                  .then(data => data.json())
-                  .then(snippetResponse => {
-                    if (snippetResponse) {
-                      setSnippetData(
-                        snippetData
-                          .filter(x => !x.loading)
-                          .concat([
-                            {
-                              text: snippetResponse.text,
-                              timestamp: snippetTimeRange
-                            }
-                          ])
-                      );
-                    }
-                  });
               }}
             />
           </div>
 
           <ul className="episode-snippets">
-            {snippetData.map((s, i) => {
+            {snippets.map((s, i) => {
+              const mins = Math.floor(s.startTime % 60);
+              const snippetTimeRange = `${Math.floor(s.startTime / 60)}:${
+                mins < 10 ? "0" + mins : mins
+              }`;
+
               return (
                 <div key={i} className="episode-snippet">
                   {s.loading && <div className="snippet-loader"></div>}
                   {s.text && <p className="episode-snippet-quote">{s.text}</p>}
-                  <p className="episode-snippet-timestamp">{`At: ${s.timestamp} `}</p>
+                  <p
+                    className="episode-snippet-timestamp"
+                    onClick={() => {
+                      audioRef.current.currentTime = s.startTime;
+                    }}
+                  >{`At: ${snippetTimeRange} `}</p>
                 </div>
               );
             })}

@@ -90,6 +90,8 @@ body,
 .podcast-header-title {
   font-size: 30px;
   font-weight: bold;
+  color: rgba(245, 226, 200, 1);
+  text-decoration: none;
 }
 
 .podcast-header-author {
@@ -244,9 +246,13 @@ body,
 .episode-snippet-quote {
   font-style: italic;
   margin-bottom: 10px;
-  /* outline: none; */
 }
 
 .episode-snippet-timestamp {
   text-align: right;
+  cursor: pointer;
+}
+
+.episode-snippet-timestamp:hover {
+  text-decoration: underline;
 }
