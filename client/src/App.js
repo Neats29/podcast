@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./App.css";
 import { Router, Link } from "@reach/router";
+import { SnippetLogo } from "./snippet"
 
 function App() {
   return (
@@ -112,15 +113,19 @@ const Episode = props => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/episodes?guid=${atob(props.guid)}`)
+    fetch(`http://localhost:3001/episodes?id=${props.id}&guid=${props.guid}`)
       .then(r => r.json())
       .then(r => {
         setData(r);
       });
   }, [props.guid]);
 
+  console.log(data)
 
-  console.log(props)
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <h2>{data.title}</h2>
@@ -130,9 +135,9 @@ const Episode = props => {
         width={100}
         height={100}
       />
-      <audio controls src="./after-short.mp3">
+      <audio controls src={data.enclosure.url}>
       </audio>
-      <img style="margin-left: 30px;" src="./q.svg" onClick="getNote()" width="50px" height="50px"></img>
+      <SnippetLogo width="50px" height="50px"></SnippetLogo>
     </>
   )
 }
