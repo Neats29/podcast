@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./App.css";
 import { Router, Link } from "@reach/router";
 import { SnippetLogo } from "./snippet"
+import Slider from 'react-input-slider';
 
 function App() {
   return (
@@ -124,6 +125,7 @@ const Episode = props => {
 
   const [snippetText, setSnippetText] = useState([])
 
+  const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
 
   const audioRef = useRef(null)
 
@@ -142,6 +144,21 @@ const Episode = props => {
       />
       <audio controls src={data.enclosure.url} ref={audioRef}>
       </audio>
+      <form>
+        <div>{`Playback Speed ${playbackSpeed.x}`}</div>
+        <Slider
+          axis="x"
+          x={playbackSpeed.x}
+          xstep={0.1}
+          xmax={3.5}
+          xmin={0.5}
+          onChange={({ x }) => {
+            setPlaybackSpeed(playbackSpeed => ({ ...playbackSpeed, x: parseFloat(x.toFixed(2)) }))
+            audioRef.current.playbackRate = x
+          }
+          }
+        ></Slider>
+      </form>
       <SnippetLogo width="50px" height="50px"
         onClick={() => {
           const endTime = audioRef.current.currentTime;
