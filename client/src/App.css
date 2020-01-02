@@ -244,6 +244,7 @@ body,
 .episode-snippet-quote {
   font-style: italic;
   margin-bottom: 10px;
+  /* outline: none; */
 }
 
 .episode-snippet-timestamp {
