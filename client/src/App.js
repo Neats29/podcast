@@ -122,9 +122,8 @@ const Episode = props => {
 
   const [snippetLoaderVisible, showSnippetLoader] = useState(false)
 
-  const [snippetText, getSnippetText] = useState("")
+  const [snippetText, setSnippetText] = useState("")
 
-  console.log(data)
 
   const audioRef = useRef(null)
 
@@ -168,10 +167,9 @@ const Episode = props => {
           )
             .then(data => data.json())
             .then(data => {
-              console.log(data)
               if (data) {
                 showSnippetLoader(false)
-                getSnippetText(data.text)
+                setSnippetText(data.text)
               }
             })
         }}
