@@ -71,7 +71,7 @@ $color5: rgba(189, 30, 30, 1);    // cornell red
 
 .search-result-item {
   text-decoration: none;
-  color: rgba(24, 32, 111, 1);
+  color: #000;
   display: flex;
   align-items: center;
   padding: 10px;
