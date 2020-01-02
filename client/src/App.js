@@ -130,7 +130,10 @@ const Episode = props => {
 
   const [snippetLoaderVisible, showSnippetLoader] = useState(false)
 
-  const [snippetText, setSnippetText] = useState([])
+  const [snippetData, setSnippetData] = useState([{
+    text: "",
+    timestamp: ""
+  }])
 
   const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
 
@@ -169,12 +172,15 @@ const Episode = props => {
       <SnippetLogo width="50px" height="50px"
         onClick={() => {
           const endTime = audioRef.current.currentTime;
+          console.log("endTime", endTime)
           let startTime = endTime - 20;
 
           if (startTime < 0) {
             startTime = 0;
           }
 
+
+          console.log("startTime", startTime)
           showSnippetLoader(true);
 
           fetch(`http://localhost:3001/createSnippet`, {
@@ -191,8 +197,10 @@ const Episode = props => {
             .then(data => data.json())
             .then(data => {
               if (data) {
+                const mins = Math.floor(startTime % 60)
+                const snippetTimeRange = `${Math.floor(startTime / 60)}:${mins === 0 ? "00" : mins}`
                 showSnippetLoader(false)
-                setSnippetText(snippetText.concat([data.text]))
+                setSnippetData(snippetData.concat([{ text: data.text, timestamp: snippetTimeRange }]))
               }
             });
         }}
@@ -200,16 +208,18 @@ const Episode = props => {
       {snippetLoaderVisible && <div className="snippet-loader"></div>}
 
       {
-        snippetText.length > 0 && (
+        snippetData.length > 0 && (
           <div>
-            {snippetText.map((s, i) => {
-              return (
-                <div>
-                  <p key={i}>{s}</p>
-                  <br />
-                </div>
-              )
-
+            {snippetData.map((s, i) => {
+              if (s.text.length > 0) {
+                return (
+                  <div>
+                    <p key={i}>{s.text}</p>
+                    <p key={`start-time - ${i} `}>{`Timestamp: ${s.timestamp} `}</p>
+                    <br />
+                  </div>
+                )
+              }
             })}
           </div>
         )
