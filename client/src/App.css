@@ -1,39 +1,3 @@
-html {
-  box-sizing: border-box;
-  font-size: 16px;
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-ol,
-ul {
-  margin: 0;
-  padding: 0;
-  font-weight: normal;
-}
-
-ol,
-ul {
-  list-style: none;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
 /* 
 $color1: rgba(24, 32, 111, 1);    // midnight blue
 $color2: rgba(23, 37, 90, 1);     // space cadet 
@@ -42,8 +6,10 @@ $color4: rgba(216, 131, 115, 1);  // new york pink
 $color5: rgba(189, 30, 30, 1);    // cornell red 
 */
 
+html,
 body,
-.app {
+#root,
+[role="group"] {
   height: 100%;
 }
 
@@ -186,7 +152,7 @@ body,
 
 .snippet-loader-page {
   display: flex;
-  align-content: center;
+  align-items: center;
   justify-content: center;
   height: 100%;
 }
@@ -208,17 +174,19 @@ body,
 
 .episode-player {
   display: flex;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
 }
 
 .episode-player-img {
   margin-right: 20px;
+  box-shadow: 1px 0px 5px rgba(23, 37, 90, 0.25);
 }
 
 .episode-player-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  flex: 1;
 }
 
 .episode-player-controls {
@@ -257,14 +225,12 @@ body,
 }
 
 .create-snippet-button {
-  position: absolute;
-  top: 0;
-  right: 0;
   cursor: pointer;
 }
 
 .episode-snippets-header {
-  min-height: 50px;
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
