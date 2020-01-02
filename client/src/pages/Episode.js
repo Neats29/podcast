@@ -8,23 +8,15 @@ export const Episode = props => {
   const dispatch = useDispatch();
   const data = useSelector(state => state.podcasts.byId[props.id]);
 
+  const [snippetData, setSnippetData] = useState([]);
+  const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
+  const audioRef = useRef(null);
+
   useEffect(() => {
     if (!data) {
       getPodcast(dispatch, props.id);
     }
   }, [props.id]);
-
-  // useEffect(() => {
-  //   fetch(`http://localhost:3001/episodes?id=${props.id}&guid=${props.guid}`)
-  //     .then(r => r.json())
-  //     .then(r => {
-  //       setData(r);
-  //     });
-  // }, [props.id, props.guid]);
-
-  const [snippetData, setSnippetData] = useState([]);
-  const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
-  const audioRef = useRef(null);
 
   if (!data) {
     return (
