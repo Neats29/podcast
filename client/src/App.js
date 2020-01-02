@@ -6,7 +6,7 @@ import Slider from 'react-input-slider';
 
 function App() {
   return (
-    <div className="App">
+    <div className="app">
       <Router>
         <Search path="/" />
         <Episodes path="episodes/:id" />
@@ -38,37 +38,46 @@ const Search = () => {
   }, [searchTerm]);
 
   return (
-    <header className="App-header">
-      <input
-        type="text"
-        onChange={e => {
-          searchTermRef.current = e.target.value;
-          setSearchTerm(e.target.value);
-        }}
-      />
-      <ul>
+    <div className="search-page">
+      <div className="search-input-wrapper">
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search podcasts..."
+          onChange={e => {
+            searchTermRef.current = e.target.value;
+            setSearchTerm(e.target.value);
+          }}
+        />
+      </div>
+      <ul className="search-results">
         {results.map((r, i) => {
           return (
-            <li key={i} className="search-result-item">
-              <Link to={`/episodes/${r.trackId}`}>
+            <li key={i}>
+              <Link
+                to={`/episodes/${r.trackId}`}
+                className="search-result-item"
+              >
                 <img
                   src={r.artworkUrl100}
                   className="search-result-item-img"
                   width={100}
                   height={100}
                 />
-                <span className="search-result-item-artist">
-                  {r.artistName}
-                </span>
-                <span className="search-result-item-name">
-                  {r.collectionName}
+                <span className="search-result-item-details">
+                  <span className="search-result-item-name">
+                    {r.collectionName}
+                  </span>
+                  <span className="search-result-item-artist">
+                    by {r.artistName}
+                  </span>
                 </span>
               </Link>
             </li>
           );
         })}
       </ul>
-    </header>
+    </div>
   );
 };
 
@@ -83,8 +92,6 @@ const Episodes = props => {
       });
   }, [props.id]);
 
-  console.log(data)
-
   if (!data) {
     return <div>Loading...</div>;
   }
@@ -93,12 +100,12 @@ const Episodes = props => {
     <header className="App-header">
       <div>{data.title}</div>
       <div>{data.author}</div>
-      <div>{data.description.long}</div>
+      {data.description && <div>{data.description.long}</div>}
       <ul>
         {data.episodes.map((e, i) => {
           return (
             <li>
-              <Link to={`/episodes/${props.id}/${btoa(e.guid)}`} >
+              <Link to={`/episodes/${props.id}/${btoa(e.guid)}`}>
                 <span>{e.title}</span>
               </Link>
               <span>{e.published}</span>
@@ -127,7 +134,7 @@ const Episode = props => {
 
   const [playbackSpeed, setPlaybackSpeed] = useState({ x: 1 });
 
-  const audioRef = useRef(null)
+  const audioRef = useRef(null);
 
   if (!data) {
     return <div>Loading...</div>;
@@ -168,49 +175,47 @@ const Episode = props => {
             startTime = 0;
           }
 
-          showSnippetLoader(true)
+          showSnippetLoader(true);
 
           fetch(`http://localhost:3001/createSnippet`, {
             body: JSON.stringify({
               url: data.enclosure.url,
               endTime,
-              startTime,
+              startTime
             }),
             headers: {
-              'content-type': "application/json"
+              "content-type": "application/json"
             },
             method: "POST"
-          }
-          )
+          })
             .then(data => data.json())
             .then(data => {
               if (data) {
                 showSnippetLoader(false)
                 setSnippetText(snippetText.concat([data.text]))
               }
-            })
+            });
         }}
-
       ></SnippetLogo>
-      {snippetLoaderVisible &&
-        <div className="snippet-loader"></div>
-      }
+      {snippetLoaderVisible && <div className="snippet-loader"></div>}
 
-      {snippetText.length > 0 &&
-        <div>
-          {snippetText.map((s, i) => {
-            return (
-              <div>
-                <p key={i}>{s}</p>
-                <br />
-              </div>
-            )
+      {
+        snippetText.length > 0 && (
+          <div>
+            {snippetText.map((s, i) => {
+              return (
+                <div>
+                  <p key={i}>{s}</p>
+                  <br />
+                </div>
+              )
 
-          })}
-        </div>
+            })}
+          </div>
+        )
       }
     </>
-  )
-}
+  );
+};
 
 export default App;

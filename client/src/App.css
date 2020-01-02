@@ -41,3 +41,61 @@ $color3: rgba(245, 226, 200, 1);  // champagne
 $color4: rgba(216, 131, 115, 1);  // new york pink
 $color5: rgba(189, 30, 30, 1);    // cornell red 
 */
+
+.search-input-wrapper {
+  background-color: rgba(23, 37, 90, 1);
+  padding: 50px 0;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input {
+  color: rgba(23, 37, 90, 1);
+  padding: 20px;
+  width: 900px;
+  border: 0;
+  border-radius: 5px;
+  font-size: 22px;
+}
+
+.search-input:focus {
+  outline: 0;
+}
+
+.search-results {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.search-result-item {
+  text-decoration: none;
+  color: rgba(24, 32, 111, 1);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid rgba(23, 37, 90, 0.2);
+}
+
+.search-result-item:hover {
+  background-color: rgba(245, 226, 200, 0.3);
+}
+
+.search-result-item-img {
+  margin-right: 20px;
+}
+
+.search-result-item-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-item-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.search-result-item-artist {
+  font-size: 12px;
+}
