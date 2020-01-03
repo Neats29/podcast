@@ -6,6 +6,8 @@ import { getPodcast, createSnippet } from "../store";
 import { SnippetLogo } from "../snippet";
 
 export const Episode = props => {
+  const [editing, setEditing] = useState(null);
+  const [editedQuote, setEditedQuote] = useState("");
   const dispatch = useDispatch();
   const data = useSelector(state => state.podcasts.byId[props.id]);
 
@@ -27,7 +29,7 @@ export const Episode = props => {
     if (!data) {
       getPodcast(dispatch, props.id);
     }
-  }, [props.id]);
+  });
 
   if (!data) {
     return (
@@ -57,6 +59,7 @@ export const Episode = props => {
       <div className="episode-content">
         <div className="episode-player">
           <img
+            alt={episode.title}
             src={episode.image}
             className="episode-player-img"
             width={300}
@@ -132,14 +135,55 @@ export const Episode = props => {
 
               return (
                 <div key={i} className="episode-snippet">
-                  {s.loading && <div className="snippet-loader"></div>}
-                  {s.text && <p className="episode-snippet-quote">{s.text}</p>}
-                  <p
-                    className="episode-snippet-timestamp"
-                    onClick={() => {
-                      audioRef.current.currentTime = s.startTime;
-                    }}
-                  >{`At: ${snippetTimeRange} `}</p>
+                  {s.loading && (
+                    <div
+                      style={{ marginBottom: 20 }}
+                      className="snippet-loader"
+                    ></div>
+                  )}
+                  {s.text && editing !== s ? (
+                    <p className="episode-snippet-quote">{s.text}</p>
+                  ) : null}
+                  {s.text && editing === s ? (
+                    <textarea
+                      className="episode-snippet-quote"
+                      onChange={e => setEditedQuote(e.target.value)}
+                    >
+                      {s.text}
+                    </textarea>
+                  ) : null}
+                  <div className="episode-snippet-controls">
+                    <span
+                      className="episode-snippet-edit"
+                      onClick={() => {
+                        if (editing === s) {
+                          dispatch({
+                            type: "CREATE_SNIPPET/SUCCESS",
+                            data: {
+                              id: props.id,
+                              guid: props.guid,
+                              startTime: s.startTime,
+                              endTime: s.endTime,
+                              text: editedQuote
+                            }
+                          });
+                          setEditing(null);
+                          setEditedQuote("");
+                        } else {
+                          setEditing(s);
+                          setEditedQuote(s.text);
+                        }
+                      }}
+                    >
+                      {editing === s ? "Save" : "Edit"}
+                    </span>
+                    <span
+                      className="episode-snippet-timestamp"
+                      onClick={() => {
+                        audioRef.current.currentTime = s.startTime;
+                      }}
+                    >{`At ${snippetTimeRange} `}</span>
+                  </div>
                 </div>
               );
             })}

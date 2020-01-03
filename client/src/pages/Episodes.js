@@ -11,7 +11,7 @@ export const Episodes = props => {
     if (!data) {
       getPodcast(dispatch, props.id);
     }
-  }, [props.id]);
+  });
 
   if (!data) {
     return (
@@ -43,6 +43,7 @@ export const Episodes = props => {
                 className="podcast-episode-item"
               >
                 <img
+                  alt={e.title}
                   className="podcast-episode-item-img"
                   src={e.image || data.image}
                   width={50}

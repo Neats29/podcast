@@ -32,7 +32,7 @@ export const Search = () => {
       return;
     }
     search(dispatch, deboundedSearchTerm);
-  }, [deboundedSearchTerm]);
+  });
 
   return (
     <div className="search-page">
@@ -56,6 +56,7 @@ export const Search = () => {
                 className="search-result-item"
               >
                 <img
+                  alt={r.collectionName}
                   src={r.artworkUrl100}
                   className="search-result-item-img"
                   width={100}
