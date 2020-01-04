@@ -45,7 +45,10 @@ export const Episode = props => {
     <div>
       <div className="podcast-header">
         <div className="podcast-header-content">
-          <Link to={`/episodes/${props.id}`} className="podcast-header-title">
+          <Link
+            to={`/podnotes/episodes/${props.id}`}
+            className="podcast-header-title"
+          >
             {data.title}
           </Link>
           <div className="podcast-header-author">by {data.author}</div>

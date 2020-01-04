@@ -52,7 +52,7 @@ export const Search = () => {
           return (
             <li key={i}>
               <Link
-                to={`/episodes/${r.trackId}`}
+                to={`/podnotes/episodes/${r.trackId}`}
                 className="search-result-item"
               >
                 <img

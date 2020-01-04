@@ -39,7 +39,7 @@ export const Episodes = props => {
           return (
             <li key={i}>
               <Link
-                to={`/episodes/${props.id}/${btoa(e.guid)}`}
+                to={`/podnotes/episodes/${props.id}/${btoa(e.guid)}`}
                 className="podcast-episode-item"
               >
                 <img

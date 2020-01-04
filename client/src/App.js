@@ -12,9 +12,9 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <Search path="/" />
-        <Episodes path="episodes/:id" />
-        <Episode path="episodes/:id/:guid" />
+        <Search path="/podnotes" />
+        <Episodes path="podnotes/episodes/:id" />
+        <Episode path="podnotes/episodes/:id/:guid" />
       </Router>
     </Provider>
   );
